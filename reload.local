@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# Get the value for which option it's supposed to load
+value=$(cat doit.value)
+
+# Accepted values:
+#   iCloud = iCloud family calendar without mouse
+#   iCloudMouse = iCloud family calendar with mouse
+#   Chores = Google chores calendar without mouse
+#   ChoresMouse = Google chores calendar with mouse
+#   checkFlags = Open chromium to check set flags
+#   doNothing = Don't start chromium; allows for debugging at the command line
+#   PicsEmmy = Slideshow of Emmy & Joey pics
+#   PicsFam = Slideshow of Family pics
+
+
+
+if [ "$value" = "iCloud" ] || [ "$value" = "iCloudMouse" ] || [ "$value" = "Chores" ] || [ "$value" = "ChoresMouse" ] || [ "$value" = "checkFlags" ] || [ "$value" = "localIndex" ]; then
+# It takes anywhere between 12-20 seconds, but it works
+export DISPLAY=:0.0 && xdotool key F5
+
+
+fi
+echo 'Nothing' >> /dev/null
