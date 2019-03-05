@@ -1,0 +1,37 @@
+# View raw to copy and paste the easy way...
+
+
+##### Daily stuff #####
+### Every day, update and reboot the pi at 04:30
+30 04 * * * sudo apt-get update && sudo apt-get upgrade -y && sudo reboot
+
+### Wake up the display at 05:00
+00 05 * * * xset dpms force on -display :0
+
+### Start Family pics in the AM
+05 05 * * * echo 'PicsFam' > doit.value; sudo killall xinit; ./browser.sh
+
+### Reload display every day, at the top and bottom of the hour, between 05:00 and 20:30 to keep display up to date
+0,30 5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20 * * * ./reload.sh
+
+### Put display to sleep nightly at 21:45 to keep brightness down at night
+45 21 * * * xset dpms force standby -display :0
+
+### Overnight every night, flash screen on for one second, every 20 minutes to keep the monitor from shutting off
+5,25,45 0,1,2,3,4,22,23 * * * xset dpms force on -display :0; sleep 1; xset dpms force standby -display :0
+
+
+     ##### Weekday stuff #####
+### Display the chores calendar weekdays at 16:00
+00 16 * * 1,2,3,4,5 echo 'Chores' > doit.value; sudo killall xinit; ./browser.sh
+
+
+     ##### Weekend stuff #####
+### Display family pics weekends at 06:15
+15 06 * * 0,6,7 echo 'PicsFam' > doit.value; sudo killall xinit; ./browser.sh
+
+### Display the chores calendar weekends at 08:45
+45 08 * * 0,6,7 echo 'Chores' > doit.value; sudo killall xinit; ./browser.sh
+
+### Display family pics weekends at 18:15
+15 18 * * 0,6,7 echo 'PicsFam' > doit.value; sudo killall xinit; ./browser.sh
