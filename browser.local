@@ -1,0 +1,107 @@
+#!/bin/bash
+
+########################################
+#    auto_grab.sh                      #
+#    By: n0beard                       #
+#                                      #
+#  A simple RaspberryPi calendar /     #
+#  photo display. It can be switched   #
+#  between the two remotely.           #
+########################################
+
+# Get the value for which option it's supposed to load
+value=$(cat doit.value)
+
+# Accepted values:
+#   iCloud = iCloud family calendar without mouse
+#   iCloudMouse = iCloud family calendar with mouse
+#   Chores = Google chores calendar without mouse
+#   ChoresMouse = Google chores calendar with mouse
+#   checkFlags = Open chromium to check set flags
+#   doNothing = Don't start chromium; allows for debugging at the command line
+#   PicsKid = Slideshow of Emmy & Joey pics
+#   PicsFam = Slideshow of Family pics
+
+
+
+
+###  Gets rid of "Chromium didn't shut down correctly" errors
+
+#Clean up the randomly-named file(s)
+for i in /home/pi/.config/chromium/Default/.org.chromium.Chromium.*; do
+    sed -i 's/"exited_cleanly": false/"exited_cleanly": true/' $i
+    sed -i 's/"exit_state": "Crashed"/"exit_state": "Normal"/' $i
+done
+
+#Clean up Preferences
+sed -i 's/"exited_cleanly": false/"exited_cleanly": true/' /home/pi/.config/chromium/Default/Preferences
+sed -i 's/"exit_state": "Crashed"/"exit_state": "Normal"/' /home/pi/.config/chromium/Default/Preferences
+sed -i 's/"exit_type":"[^"]\+"/"exit_type":"Normal"/' /home/pi/.config/chromium/Default/Preferences
+sudo sed -i 's/"exited_cleanly": false/"exited_cleanly": true/' /root/.config/chromium/Default/Preferences
+sudo sed -i 's/"exit_state": "Crashed"/"exit_state": "Normal"/' /root/.config/chromium/Default/Preferences
+sudo sed -i 's/"exit_type":"[^"]\+"/"exit_type":"Normal"/' /root/.config/chromium/Default/Preferences
+
+#Clean up Local State
+sed -i 's/"exited_cleanly": false/"exited_cleanly": true/' /home/pi/.config/chromium/Local\ State
+sudo sed -i 's/"exited_cleanly": false/"exited_cleanly": true/' /root/.config/chromium/Local\ State
+
+#Delete SingletonLock
+rm -f $HOME/.config/chromium/SingletonLock
+sudo rm -f /root/.config/chromium/SingletonLock
+
+
+
+### TV resolution = 1280x720
+
+
+
+##### Open correct program based on $value
+if [ "$value" = "iCloud" ]; then
+export DISPLAY=:0.0; sudo xinit /usr/bin/chromium-browser --no-default-browser-check --noerrdialogs --app-auto-launched --disable-session-crashed-bubble --disable-infobars --kiosk --no-sandbox --start-fullscreen --start-maximized https://www.icloud.com/#calendar -- -nocursor -dpms -s off -s noblank
+
+
+elif [ "$value" = "iCloudMouse" ]; then
+export DISPLAY=:0.0; sudo xinit /usr/bin/chromium-browser --no-default-browser-check --noerrdialogs --app-auto-launched --disable-session-crashed-bubble --disable-infobars --kiosk --no-sandbox --start-fullscreen --start-maximized https://www.icloud.com/#calendar -- -dpms -s off -s noblank
+
+
+
+elif [ "$value" = "Chores" ]; then
+sudo DISPLAY=:0.0; sudo xinit /usr/bin/chromium-browser --no-default-browser-check --noerrdialogs --app-auto-launched --disable-session-crashed-bubble --disable-infobars --kiosk --no-sandbox --start-fullscreen --start-maximized https://calendar.google.com/calendar/r/day -- -nocursor -dpms -s off -s noblank
+
+
+
+elif [ "$value" = "ChoresMouse" ]; then
+export DISPLAY=:0.0; sudo xinit /usr/bin/chromium-browser --no-default-browser-check --noerrdialogs --app-auto-launched --disable-session-crashed-bubble --disable-infobars --kiosk --no-sandbox --start-fullscreen --start-maximized https://calendar.google.com/calendar/r/day -- -dpms -s off -s noblank
+
+
+
+elif [ "$value" = "checkFlags" ]; then
+export DISPLAY=:0.0; sudo xinit /usr/bin/chromium-browser --no-default-browser-check --no-sandbox --start-fullscreen --start-maximized chrome://flags/ -- -dpms -s off -s noblank
+
+
+
+elif [ "$value" = "doNothing" ]; then
+echo "Okay, I won't do a damn thing."
+
+
+
+elif [ "$value" = "PicsKid" ]; then
+export DISPLAY=:0.0; sudo xinit  /usr/bin/feh --quiet --randomize --full-screen -Y --slideshow-delay 15.0 /home/pi/PicsKid  -- -dpms -s off -s noblank
+#export DISPLAY=:0.0; sudo xinit  /usr/bin/feh --quiet --preload --randomize --full-screen -Y --slideshow-delay 15.0 /home/pi/PicsKid  -- -dpms -s off -s noblank
+
+
+
+elif [ "$value" = "PicsFam" ]; then
+export DISPLAY=:0.0; sudo xinit  /usr/bin/feh --quiet --randomize --full-screen -Y --slideshow-delay 15.0 /home/pi/PicsFam -- -dpms -s off -s noblank
+#export DISPLAY=:0.0; sudo xinit  /usr/bin/feh --quiet --preload --randomize --full-screen -Y --slideshow-delay 15.0 /home/pi/PicsFam -- -dpms -s off -s noblank
+
+
+
+elif [ "$value" = "localIndex" ]; then
+export DISPLAY=:0.0; sudo xinit xinit /usr/bin/chromium-browser --no-default-browser-check --noerrdialogs --app-auto-launched --disable-session-crashed-bubble --disable-infobars --kiosk --no-sandbox --start-fullscreen --start-maximized file:///home/pi/index.html -- -dpms -s off -s noblank
+
+
+
+else
+echo "I have no fuckin idea what you want, shithead."
+fi
